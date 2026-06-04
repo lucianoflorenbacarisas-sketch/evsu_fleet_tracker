@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.id %}Edit Vehicle{% else %}Add Vehicle{% endif %} - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1><i class="fas fa-car"></i> {% if form.instance.id %}Edit Vehicle{% else %}Add Vehicle{% endif %}</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        {% for field in form %}
+                            {% if field.name == 'current_value' or field.name == 'description' %}
+                                <div class="col-12 mb-3">
+                            {% else %}
+                                <div class="col-md-6 mb-3">
+                            {% endif %}
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {% if field.errors %}
+                                    {{ field }}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in field.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {% if form.instance.id %}Update Vehicle{% else %}Add Vehicle{% endif %}
+                        </button>
+                        <a href="{% url 'core:vehicle_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

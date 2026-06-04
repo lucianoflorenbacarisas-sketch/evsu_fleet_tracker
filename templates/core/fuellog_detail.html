@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Fuel Log Detail - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="fas fa-gas-pump"></i> Fuel Log Detail</h1>
+        <a href="{% url 'core:fuellog_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Fuel Logs</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Date:</strong> {{ fuel_log.refuel_date|date:'M d, Y' }}</p>
+                <p><strong>Vehicle:</strong> <a href="{% url 'core:vehicle_detail' fuel_log.vehicle.id %}">{{ fuel_log.vehicle.registration_number }}</a></p>
+                <p><strong>Driver:</strong> {{ fuel_log.driver.user.get_full_name|default:'-' }}</p>
+                <p><strong>Fuel Type:</strong> {{ fuel_log.fuel_type.name }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Quantity:</strong> {{ fuel_log.quantity_liters }} L</p>
+                <p><strong>Cost per Liter:</strong> ₱{{ fuel_log.cost_per_liter|floatformat:2 }}</p>
+                <p><strong>Total Cost:</strong> ₱{{ fuel_log.total_cost|floatformat:2 }}</p>
+                <p><strong>Odometer:</strong> {{ fuel_log.odometer_reading }} km</p>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h5>Notes</h5>
+            <p>{{ fuel_log.notes|default:'No notes provided.' }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -53,19 +53,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',     
+    'django.contrib.humanize',
+    
+    # Project apps
     'accounts',
-    'assets',
-    'maintenance',
-    'api',
-    'dashboard',
-    'security',
-    'logs',
+    'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'config.middleware.ExceptionLoggingMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

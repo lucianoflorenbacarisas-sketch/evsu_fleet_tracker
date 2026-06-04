@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Fleet Report - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1><i class="fas fa-file-pdf"></i> Fleet Report</h1>
+</div>
+
+<!-- Vehicle Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Vehicles by Status</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        {% for item in vehicles_by_status %}
+                            <tr>
+                                <td>{{ item.status }}</td>
+                                <td><strong>{{ item.count }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Vehicles by Type</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        {% for item in vehicles_by_type %}
+                            <tr>
+                                <td>{{ item.vehicle_type__name }}</td>
+                                <td><strong>{{ item.count }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Metrics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Maintenance by Status</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        {% for item in maintenance_by_status %}
+                            <tr>
+                                <td>{{ item.status }}</td>
+                                <td><strong>{{ item.count }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="mt-3"><strong>Total Cost:</strong> ₱{{ total_maintenance_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Asset Metrics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Assets by Status</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        {% for item in assets_by_status %}
+                            <tr>
+                                <td>{{ item.status }}</td>
+                                <td><strong>{{ item.count }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="mt-3"><strong>Total Value:</strong> ₱{{ total_asset_value|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fuel Metrics -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Fuel Summary</div>
+            <div class="card-body">
+                <p><strong>Total Fuel Cost:</strong> ₱{{ total_fuel_cost|floatformat:2 }}</p>
+                <p><strong>Total Fuel Consumed:</strong> {{ total_fuel_liters|floatformat:0 }} Liters</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

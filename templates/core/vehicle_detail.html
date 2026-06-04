@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ vehicle }} - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-car"></i> {{ vehicle.registration_number }}</h1>
+            <small class="text-muted">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</small>
+        </div>
+        {% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+            <div>
+                <a href="{% url 'core:vehicle_update' vehicle.id %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                {% if user.role == 'ADMIN' %}
+                    <a href="{% url 'core:vehicle_delete' vehicle.id %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Vehicle Info -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Vehicle Information</div>
+            <div class="card-body">
+                <p><strong>Registration Number:</strong> {{ vehicle.registration_number }}</p>
+                <p><strong>VIN:</strong> {{ vehicle.vin }}</p>
+                <p><strong>Make & Model:</strong> {{ vehicle.make }} {{ vehicle.model }}</p>
+                <p><strong>Year:</strong> {{ vehicle.year }}</p>
+                <p><strong>Color:</strong> {{ vehicle.color }}</p>
+                <p><strong>Type:</strong> {{ vehicle.vehicle_type.name }}</p>
+                <p><strong>Fuel Type:</strong> {{ vehicle.fuel_type.name }}</p>
+                <p><strong>Status:</strong> <span class="status-badge status-{{ vehicle.status|lower }}">{{ vehicle.get_status_display }}</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Financial Information</div>
+            <div class="card-body">
+                <p><strong>Purchase Price:</strong> ₱{{ vehicle.purchase_price|floatformat:2 }}</p>
+                <p><strong>Purchase Date:</strong> {{ vehicle.purchase_date|date:"M d, Y" }}</p>
+                <p><strong>Current Value:</strong> ₱{{ vehicle.current_value|floatformat:2|default:"N/A" }}</p>
+                <p><strong>Current Odometer:</strong> {{ vehicle.current_odometer }} km</p>
+                <p><strong>Assigned Driver:</strong> 
+                    {% if vehicle.assigned_driver %}
+                        {{ vehicle.assigned_driver.user.get_full_name }}
+                    {% else %}
+                        <span class="text-muted">Unassigned</span>
+                    {% endif %}
+                </p>
+                <p><strong>Created:</strong> {{ vehicle.created_at|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Records -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-tools"></i> Maintenance Records</h5>
+    </div>
+    <div class="card-body">
+        {% if maintenance_records %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in maintenance_records %}
+                            <tr>
+                                <td>{{ record.maintenance_type.name }}</td>
+                                <td>{{ record.scheduled_date|date:"M d, Y" }}</td>
+                                <td><span class="status-badge status-{{ record.status|lower }}">{{ record.get_status_display }}</span></td>
+                                <td>₱{{ record.cost|floatformat:2|default:"N/A" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Total Maintenance Cost:</strong> ₱{{ total_maintenance_cost|floatformat:2 }}</p>
+        {% else %}
+            <p class="text-muted">No maintenance records found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Fuel Logs -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-gas-pump"></i> Recent Fuel Logs</h5>
+            </div>
+            <div class="card-body">
+                {% if fuel_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Liters</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in fuel_logs %}
+                                    <tr>
+                                        <td>{{ log.refuel_date|date:"M d" }}</td>
+                                        <td>{{ log.quantity_liters }} L</td>
+                                        <td>₱{{ log.total_cost|floatformat:2 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No fuel logs found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-id-card"></i> Inspections</h5>
+            </div>
+            <div class="card-body">
+                {% if inspections %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inspection in inspections %}
+                                    <tr>
+                                        <td>{{ inspection.inspection_date|date:"M d, Y" }}</td>
+                                        <td><span class="badge bg-{{ inspection.result|lower }}">{{ inspection.get_result_display }}</span></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No inspections found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+</div>
+
+<!-- Key Metrics Row -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ total_vehicles }}</div>
+            <div class="metric-label">Total Vehicles</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value" style="color: #27ae60;">{{ active_vehicles }}</div>
+            <div class="metric-label">Active Vehicles</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value" style="color: #e74c3c;">{{ overdue_maintenance }}</div>
+            <div class="metric-label">Overdue Maintenance</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value" style="color: #f39c12;">{{ vehicles_in_maintenance }}</div>
+            <div class="metric-label">In Maintenance</div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Metrics Row -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ total_drivers }}</div>
+            <div class="metric-label">Total Drivers</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ total_assets }}</div>
+            <div class="metric-label">Total Assets</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value" style="color: #27ae60;">{{ active_assets }}</div>
+            <div class="metric-label">Active Assets</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ vehicle_utilization }}%</div>
+            <div class="metric-label">Vehicle Utilization</div>
+        </div>
+    </div>
+</div>
+
+<!-- Fuel & Maintenance Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">₱{{ fuel_cost_30_days|floatformat:2 }}</div>
+            <div class="metric-label">Fuel Cost (30 Days)</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value">{{ fuel_liters_30_days|floatformat:0 }} L</div>
+            <div class="metric-label">Fuel Consumed (30 Days)</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 mb-3">
+        <div class="metric-card">
+            <div class="metric-value" style="color: #27ae60;">{{ upcoming_maintenance }}</div>
+            <div class="metric-label">Upcoming Maintenance</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Maintenance -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tools"></i> Recent Maintenance Records</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_maintenance %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Vehicle</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Scheduled Date</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in recent_maintenance %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'core:maintenance_detail' record.id %}">
+                                                {{ record.vehicle.registration_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ record.maintenance_type.name }}</td>
+                                        <td>
+                                            <span class="status-badge status-{{ record.status|lower }}">
+                                                {{ record.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ record.scheduled_date|date:"M d, Y" }}</td>
+                                        <td>₱{{ record.cost|floatformat:2 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No maintenance records found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightning-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+                        <div class="col-md-6 col-lg-3 mb-2">
+                            <a href="{% url 'core:vehicle_create' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Add Vehicle
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-2">
+                            <a href="{% url 'core:asset_create' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Add Asset
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-2">
+                            <a href="{% url 'core:maintenance_create' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Create Maintenance
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-2">
+                            <a href="{% url 'core:fuellog_create' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Log Fuel
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-6 col-lg-3 mb-2">
+                        <a href="{% url 'core:vehicle_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-car"></i> View Vehicles
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-2">
+                        <a href="{% url 'core:report_fleet' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-file-pdf"></i> Fleet Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

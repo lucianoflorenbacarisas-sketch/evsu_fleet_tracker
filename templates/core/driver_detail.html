@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Driver Details - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="fas fa-user"></i> Driver Details</h1>
+        <a href="{% url 'core:driver_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Drivers</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ driver.user.get_full_name }}</p>
+                <p><strong>Email:</strong> {{ driver.user.email }}</p>
+                <p><strong>License Number:</strong> {{ driver.license_number }}</p>
+                <p><strong>Phone:</strong> {{ driver.phone_number }}</p>
+                <p><strong>Status:</strong> {{ driver.status }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Assigned Vehicle:</strong>
+                    {% if driver.vehicle %}
+                        <a href="{% url 'core:vehicle_detail' driver.vehicle.id %}">{{ driver.vehicle.registration_number }}</a>
+                    {% else %}
+                        None
+                    {% endif %}
+                </p>
+                <p><strong>Created At:</strong> {{ driver.created_at|date:'M d, Y' }}</p>
+                <p><strong>Updated At:</strong> {{ driver.updated_at|date:'M d, Y' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Fuel Log - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1><i class="fas fa-gas-pump"></i> Add Fuel Log</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Fuel Log</button>
+                    <a href="{% url 'core:fuellog_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

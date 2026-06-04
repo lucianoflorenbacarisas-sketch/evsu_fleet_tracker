@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Detail - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h1><i class="fas fa-tools"></i> Maintenance Record</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Vehicle:</strong> <a href="{% url 'core:vehicle_detail' record.vehicle.id %}">{{ record.vehicle.registration_number }}</a></p>
+                <p><strong>Type:</strong> {{ record.maintenance_type.name }}</p>
+                <p><strong>Status:</strong> <span class="status-badge status-{{ record.status|lower }}">{{ record.get_status_display }}</span></p>
+                <p><strong>Scheduled Date:</strong> {{ record.scheduled_date|date:'M d, Y' }}</p>
+                <p><strong>Completed Date:</strong> {{ record.completed_date|date:'M d, Y'|default:'Pending' }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Cost:</strong> ₱{{ record.cost|floatformat:2|default:'N/A' }}</p>
+                <p><strong>Vendor:</strong> {{ record.vendor|default:'N/A' }}</p>
+                <p><strong>Odometer:</strong> {{ record.odometer_reading }} km</p>
+                <p><strong>Created By:</strong> {{ record.created_by.get_full_name|default:record.created_by.username }}</p>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h5>Description</h5>
+            <p>{{ record.description }}</p>
+            <h5>Notes</h5>
+            <p>{{ record.notes|default:'No notes available.' }}</p>
+        </div>
+        <a href="{% url 'core:maintenance_list' %}" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Back to Maintenance</a>
+    </div>
+</div>
+{% endblock %}

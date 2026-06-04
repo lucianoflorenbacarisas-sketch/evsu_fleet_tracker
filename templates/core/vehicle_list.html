@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicles - Fleet & Asset Tracking{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="fas fa-car"></i> Vehicles</h1>
+        {% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+            <a href="{% url 'core:vehicle_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Vehicle
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row">
+            <div class="col-md-4 mb-3">
+                <input type="text" name="search" class="form-control" placeholder="Search vehicles..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-3 mb-3">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    {% for status, label in statuses %}
+                        <option value="{{ status }}" {% if request.GET.status == status %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    {% for type_id, type_name in vehicle_types %}
+                        <option value="{{ type_id }}" {% if request.GET.type|slugify == type_id|slugify %}selected{% endif %}>{{ type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Vehicles Table -->
+<div class="card">
+    <div class="card-body">
+        {% if vehicles %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Registration #</th>
+                            <th>Make & Model</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th>Driver</th>
+                            <th>Odometer</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehicle in vehicles %}
+                            <tr>
+                                <td><strong>{{ vehicle.registration_number }}</strong></td>
+                                <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+                                <td>{{ vehicle.year }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ vehicle.status|lower }}">
+                                        {{ vehicle.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if vehicle.assigned_driver %}
+                                        {{ vehicle.assigned_driver.user.get_full_name }}
+                                    {% else %}
+                                        <span class="text-muted">Unassigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ vehicle.current_odometer }} km</td>
+                                <td>
+                                    <a href="{% url 'core:vehicle_detail' vehicle.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    {% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+                                        <a href="{% url 'core:vehicle_update' vehicle.id %}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if user.role == 'ADMIN' %}
+                                            <a href="{% url 'core:vehicle_delete' vehicle.id %}" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <p class="text-center text-muted py-4">No vehicles found. <a href="{% url 'core:vehicle_create' %}">Create one</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

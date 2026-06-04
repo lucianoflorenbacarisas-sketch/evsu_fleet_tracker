@@ -1,55 +1,34 @@
+"""
+Main URL Configuration
+
+Routes all application URLs to their respective apps.
+"""
+
 from django.contrib import admin
 from django.urls import path, include
-
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.views.generic import RedirectView
 
-from assets import views
-
-
-
 urlpatterns = [
-
-    path(
-        '',
-        include('maintenance.urls')
-    ),
-
-    path(
-        'admin/',
-        admin.site.urls
-    ),
-
-    path(
-        '',
-        RedirectView.as_view(
-            url='/login/'
-        )
-    ),
+    # Django Admin
+    path('admin/', admin.site.urls),
     
+    # App URLs
+    path('accounts/', include('accounts.urls')),
+    path('core/', include('core.urls')),
     
-
-    path(
-        '',
-        include('accounts.urls')
-    ),
-
-    path(
-        'export-assets-pdf/',
-        views.export_assets_pdf,
-        name='export_assets_pdf'
-    ),
-
+    # Redirect root to dashboard or login
+    path('', RedirectView.as_view(url='/core/dashboard/', permanent=False), name='home'),
 ]
 
-
-
-urlpatterns += static(
-
-    settings.MEDIA_URL,
-
-    document_root=settings.MEDIA_ROOT
-
-)
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=settings.STATIC_ROOT
+    )
