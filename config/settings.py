@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'api',
     'dashboard',
     'security',
-    'logs',
 ]
 
 MIDDLEWARE = [
