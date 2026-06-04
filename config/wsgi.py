@@ -13,4 +13,11 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
+if os.environ.get('RENDER') == 'true' or os.environ.get('DATABASE_URL'):
+    try:
+        from django.core.management import call_command
+        call_command('migrate', interactive=False, verbosity=0)
+    except Exception:
+        pass
+
 application = get_wsgi_application()
