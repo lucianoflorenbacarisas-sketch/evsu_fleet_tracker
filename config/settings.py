@@ -27,10 +27,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-f@)6j9)3h#kie-zhvbqef
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,evsu-fleet-tracker.onrender.com'
-).split(',')
+_allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
+if _allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'evsu-fleet-tracker.onrender.com']
 
 
 # Application definition
