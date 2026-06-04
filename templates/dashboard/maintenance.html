@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.page-title{
+
+    font-size:58px;
+    font-weight:700;
+    margin-bottom:30px;
+    color:#0f172a;
+}
+
+.main-card{
+
+    background:white;
+    border-radius:28px;
+    padding:24px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+    overflow-x:auto;
+}
+
+.main-table{
+
+    width:100%;
+    border-collapse:collapse;
+}
+
+.main-table th{
+
+    background:#1e293b;
+    color:white;
+    padding:20px;
+    text-align:left;
+    font-size:16px;
+}
+
+.main-table td{
+
+    padding:20px;
+    border-bottom:1px solid #e5e7eb;
+    vertical-align:middle;
+    color:#111827;
+    font-weight:500;
+    background:white;
+}
+
+.main-table tr:hover{
+
+    background:#f8fafc;
+}
+
+/* STATUS */
+
+.status-badge{
+
+    padding:10px 18px;
+    border-radius:50px;
+    font-size:13px;
+    font-weight:700;
+    display:inline-block;
+}
+
+.pending{
+
+    background:#fef3c7;
+    color:#d97706;
+}
+
+.approved{
+
+    background:#dcfce7;
+    color:#16a34a;
+}
+
+.completed{
+
+    background:#dbeafe;
+    color:#2563eb;
+}
+
+.rejected{
+
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+/* STATUS SELECT */
+
+.status-select{
+
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid #d1d5db;
+    background:white;
+    font-size:14px;
+    font-weight:600;
+    outline:none;
+    cursor:pointer;
+    color:#111827;
+}
+
+/* SEARCH */
+
+.search-wrapper{
+
+    display:flex;
+
+    gap:16px;
+
+    margin-bottom:24px;
+
+    flex-wrap:wrap;
+
+    width:100%;
+}
+
+.search-input{
+
+    flex:1;
+
+    min-width:260px;
+
+    width:100%;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    border:1px solid #d1d5db;
+
+    outline:none;
+
+    font-size:15px;
+
+    background:white;
+
+    color:#111827;
+
+    transition:0.3s ease;
+}
+
+.search-input:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:
+    0 0 0 4px rgba(37,99,235,0.15);
+}
+
+.status-filter{
+
+    width:220px;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    border:1px solid #d1d5db;
+
+    outline:none;
+
+    font-size:15px;
+
+    background:white;
+
+    color:#111827;
+
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+    .search-wrapper{
+
+        flex-direction:column;
+    }
+
+    .status-filter{
+
+        width:100%;
+    }
+
+}
+</style>
+
+<h1 class="page-title">
+
+
+Maintenance Requests
+
+
+</h1>
+
+<div class="search-wrapper">
+
+
+<input
+    type="text"
+    id="searchInput"
+    placeholder="Search asset, requester, issue..."
+    class="search-input"
+>
+
+<select id="statusFilter" class="status-filter">
+
+    <option value="">All Status</option>
+    <option value="pending">Pending</option>
+    <option value="approved">Approved</option>
+    <option value="completed">Completed</option>
+    <option value="rejected">Rejected</option>
+
+</select>
+
+
+</div>
+
+<div class="main-card">
+
+```
+<table class="main-table">
+
+    <thead>
+
+        <tr>
+
+            <th>Asset</th>
+            <th>Requested By</th>
+            <th>Issue Description</th>
+            <th>Status</th>
+
+            {% if user.role == 'MANAGER' %}
+            <th>Actions</th>
+            {% endif %}
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for request in requests %}
+
+        <tr class="maintenance-row">
+
+            <td>
+
+              
+
+                  {% if request.asset_name %}
+
+                   {{ request.asset_name }}
+
+                 {% else %}
+
+                 {{ request.asset.name }}
+
+                 {% endif %}
+
+                
+
+            </td>
+
+            <td>
+
+                {{ request.requested_by.username }}
+
+            </td>
+
+            <td>
+
+                {{ request.issue_description }}
+
+            </td>
+
+            <td>
+
+                {% if request.status == 'PENDING' %}
+
+                <span class="status-badge pending">
+
+                    PENDING
+
+                </span>
+
+                {% elif request.status == 'APPROVED' %}
+
+                <span class="status-badge approved">
+
+                    APPROVED
+
+                </span>
+
+                {% elif request.status == 'COMPLETED' %}
+
+                <span class="status-badge completed">
+
+                    COMPLETED
+
+                </span>
+
+                {% else %}
+
+                <span class="status-badge rejected">
+
+                    REJECTED
+
+                </span>
+
+                {% endif %}
+
+            </td>
+
+            {% if user.role == 'MANAGER' %}
+
+        <td>
+
+            <form
+                  method="POST"
+             action="/update-maintenance-status/{{ request.id }}/"
+                    >
+
+                {% csrf_token %}
+
+            <select
+            name="status"
+            class="status-select"
+            onchange="this.form.submit()"
+             >
+
+            <option value="PENDING"
+                {% if request.status == 'PENDING' %}
+                    selected
+                {% endif %}
+            >
+                Pending
+            </option>
+
+            <option value="APPROVED"
+                {% if request.status == 'APPROVED' %}
+                    selected
+                {% endif %}
+            >
+                Approved
+            </option>
+
+            <option value="COMPLETED"
+                {% if request.status == 'COMPLETED' %}
+                    selected
+                {% endif %}
+            >
+                Completed
+            </option>
+
+            <option value="REJECTED"
+                {% if request.status == 'REJECTED' %}
+                    selected
+                {% endif %}
+            >
+                Rejected
+            </option>
+
+        </select>
+
+    </form>
+
+</td>
+
+{% endif %}
+        </tr>
+
+        {% empty %}
+
+        <tr>
+
+            <td colspan="5" class="empty-text">
+
+                No maintenance requests found.
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+```
+
+</div>
+
+<script>
+
+const searchInput =
+document.getElementById("searchInput");
+
+const statusFilter =
+document.getElementById("statusFilter");
+
+const rows =
+document.querySelectorAll(".maintenance-row");
+
+function filterTable(){
+
+    const searchValue =
+    searchInput.value.toLowerCase().trim();
+
+    const statusValue =
+    statusFilter.value.toLowerCase().trim();
+
+    rows.forEach((row) => {
+
+        const rowText =
+        row.textContent.toLowerCase();
+
+        const statusElement =
+        row.querySelector(".status-badge");
+
+        const rowStatus =
+        statusElement
+        ? statusElement.textContent.toLowerCase().trim()
+        : "";
+
+        const matchesSearch =
+        rowText.includes(searchValue);
+
+        const matchesStatus =
+        statusValue === "" ||
+        rowStatus === statusValue;
+
+        row.style.display =
+        matchesSearch && matchesStatus
+        ? ""
+        : "none";
+
+    });
+
+}
+
+searchInput.addEventListener(
+    "input",
+    filterTable
+);
+
+statusFilter.addEventListener(
+    "change",
+    filterTable
+);
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <style>
+
+        body{
+            font-family:Arial;
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:30px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th,
+        td{
+            border:1px solid black;
+            padding:10px;
+            text-align:left;
+        }
+
+        th{
+            background:#f3f4f6;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>
+        EVSU Fleet Tracker
+    </h1>
+
+    <h3>
+        Assets Report
+    </h3>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Asset Name
+                </th>
+
+                <th>
+                    Type
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Assigned To
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for asset in assets %}
+
+            <tr>
+
+                <td>
+                    {{ asset.name }}
+                </td>
+
+                <td>
+                    {{ asset.asset_type }}
+                </td>
+
+                <td>
+                    {{ asset.status }}
+                </td>
+
+                <td>
+                    {{ asset.assigned_to }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>

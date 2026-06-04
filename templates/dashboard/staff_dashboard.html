@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.dashboard-title{
+    font-size:58px;
+    font-weight:700;
+    margin-bottom:40px;
+}
+
+.dashboard-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:24px;
+}
+
+.card-box{
+    background:white;
+    border-radius:24px;
+    padding:30px;
+    box-shadow:
+    0 0 20px rgba(0,0,0,0.06);
+}
+
+.card-box h3{
+    font-size:20px;
+    margin-bottom:18px;
+    color:#475569;
+}
+
+.card-box h1{
+    font-size:58px;
+    font-weight:700;
+}
+
+.blue{
+    color:#2563eb;
+}
+
+.orange{
+    color:#f59e0b;
+}
+
+.green{
+    color:#22c55e;
+}
+
+@media(max-width:768px){
+
+    .dashboard-title{
+        font-size:42px;
+    }
+
+}
+
+</style>
+
+<h1 class="dashboard-title">
+    Staff Dashboard
+</h1>
+
+<div class="dashboard-cards">
+
+    <div class="card-box">
+
+        <h3>Total Assets</h3>
+
+        <h1 class="blue">
+            {{ total_assets }}
+        </h1>
+
+    </div>
+
+    <div class="card-box">
+
+        <h3>Pending Requests</h3>
+
+        <h1 class="orange">
+            {{ pending_requests }}
+        </h1>
+
+    </div>
+
+    <div class="card-box">
+
+        <h3>Approved Requests</h3>
+
+        <h1 class="green">
+            {{ approved_requests }}
+        </h1>
+
+    </div>
+
+</div>
+
+{% endblock %}

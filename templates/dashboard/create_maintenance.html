@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.page-title{
+    font-size:58px;
+    font-weight:700;
+    margin-bottom:30px;
+}
+
+.form-card{
+    background:white;
+    border-radius:28px;
+    padding:40px;
+    max-width:700px;
+    box-shadow:
+    0 0 25px rgba(0,0,0,0.06);
+}
+
+.form-group{
+    margin-bottom:24px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:10px;
+    font-weight:600;
+    font-size:16px;
+    color:#334155;
+}
+
+.form-control{
+    width:100%;
+    padding:16px;
+    border-radius:16px;
+    border:1px solid #d1d5db;
+    font-size:15px;
+    outline:none;
+    transition:0.3s ease;
+}
+
+.form-control:focus{
+    border-color:#2563eb;
+    box-shadow:
+    0 0 0 4px rgba(37,99,235,0.15);
+}
+
+.submit-btn{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:16px 24px;
+    border-radius:16px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s ease;
+}
+
+.submit-btn:hover{
+    background:#1d4ed8;
+}
+
+@media(max-width:768px){
+
+    .page-title{
+        font-size:40px;
+    }
+
+    .form-card{
+        padding:24px;
+    }
+
+}
+
+</style>
+
+<h1 class="page-title">
+    Create Maintenance Request
+</h1>
+
+<div class="form-card">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <div class="form-group">
+
+            <label>
+                Asset Name
+            </label>
+
+            {{ form.asset_name }}
+
+            <div style="color:red; margin-top:5px;">
+                {{ form.asset_name.errors }}
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Issue Description
+            </label>
+
+            {{ form.issue_description }}
+
+        </div>
+
+        <button type="submit"
+                class="submit-btn">
+
+            Submit Request
+
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+
+document.getElementById("id_asset_name").classList.add("form-control");
+
+document.getElementById("id_issue_description").classList.add("form-control");
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-card">
+
+    <h2 class="section-title">
+        Edit Asset
+    </h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Asset Name</label>
+                <input type="text"
+                       name="name"
+                       value="{{ asset.name }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Asset Type</label>
+                <select name="asset_type" class="form-control">
+
+                    <option value="Vehicle"
+                        {% if asset.asset_type == 'Vehicle' %}selected{% endif %}>
+                        Vehicle
+                    </option>
+
+                    <option value="IT Equipment"
+                        {% if asset.asset_type == 'IT Equipment' %}selected{% endif %}>
+                        IT Equipment
+                    </option>
+
+                    <option value="Office Equipment"
+                        {% if asset.asset_type == 'Office Equipment' %}selected{% endif %}>
+                        Office Equipment
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+
+                <select name="status" class="form-control">
+
+                    <option value="Active"
+                        {% if asset.status == 'Active' %}selected{% endif %}>
+                        Active
+                    </option>
+
+                    <option value="Maintenance"
+                        {% if asset.status == 'Maintenance' %}selected{% endif %}>
+                        Maintenance
+                    </option>
+
+                    <option value="Inactive"
+                        {% if asset.status == 'Inactive' %}selected{% endif %}>
+                        Inactive
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Assigned To</label>
+
+                <input type="text"
+                       name="assigned_to"
+                       value="{{ asset.assigned_to }}"
+                       class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Price</label>
+
+                <input type="number"
+                       step="0.01"
+                       name="price"
+                       value="{{ asset.price }}"
+                       class="form-control">
+            </div>
+
+        </div>
+
+        <div class="btn-group-custom">
+
+            <button type="submit" class="btn-save">
+                Update Asset
+            </button>
+
+            <a href="{% url 'assets' %}" class="btn-cancel">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+
+.dashboard-card{
+    background:white;
+    border-radius:24px;
+    padding:35px;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+    max-width:900px;
+}
+
+.section-title{
+    font-size:36px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:30px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+    font-weight:600;
+    margin-bottom:8px;
+    color:#334155;
+}
+
+.form-control{
+    padding:12px 14px;
+    border:1px solid #dbe2ea;
+    border-radius:12px;
+    font-size:15px;
+    width:100%;
+}
+
+.form-control:focus{
+    outline:none;
+    border-color:#B30000;
+}
+
+.btn-group-custom{
+    margin-top:30px;
+    display:flex;
+    gap:12px;
+}
+
+.btn-save{
+    background:#B30000;
+    color:white;
+    border:none;
+    padding:12px 24px;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-save:hover{
+    background:#8B0000;
+}
+
+.btn-cancel{
+    background:#e5e7eb;
+    color:#111827;
+    padding:12px 24px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+{% endblock %}

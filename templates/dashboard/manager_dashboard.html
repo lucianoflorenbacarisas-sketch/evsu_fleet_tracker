@@ -1,0 +1,692 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+    .chart-card{
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    margin-bottom: 40px; /* dagdag spacing */
+}
+
+.dashboard-card{
+    margin-top: 40px;
+}
+
+.row.mt-4{
+    margin-top: 40px !important;
+}
+
+    .row.g-4{
+     margin-bottom:30px;
+    }
+
+    .chart-card{
+     min-height:450px;
+    }   
+    /* ======================
+    DASHBOARD HEADER
+    ====================== */
+
+    .dashboard-title{
+        font-size:42px;
+        font-weight:700;
+        margin-bottom:15px;
+        color:#0f172a;
+    }
+
+    /* ======================
+    STATS CARDS
+    ====================== */
+
+    .stats-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:20px;
+        margin-bottom:30px;
+    }
+
+    .stat-card{
+        background:#fff;
+        border-radius:24px;
+        padding:30px;
+        box-shadow:0 4px 18px rgba(0,0,0,.08);
+        transition:.3s;
+    }
+
+    .stat-card:hover{
+        transform:translateY(-4px);
+        box-shadow:0 8px 25px rgba(0,0,0,.12);
+    }
+
+    .stat-title{
+        color:#475569;
+        font-size:15px;
+        font-weight:600;
+        margin-bottom:10px;
+    }
+
+    .stat-number{
+        font-size:48px;
+        font-weight:700;
+    }
+
+    .blue{color:#3b82f6;}
+    .yellow{color:#f59e0b;}
+    .green{color:#22c55e;}
+    .dark{color:#0f172a;}
+
+    /* ======================
+    CHARTS
+    ====================== */
+
+    .row.mt-4{
+        margin-top:30px !important;
+    }
+
+    .chart-card{
+        background:#fff;
+        border:none;
+        border-radius:24px;
+        padding:25px;
+        height:450px;
+        box-shadow:0 4px 18px rgba(0,0,0,.08);
+    }
+
+    .chart-title{
+        font-size:20px;
+        font-weight:700;
+        color:#0f172a;
+        margin-bottom:20px;
+    }
+
+    .chart-container{
+        position:relative;
+        width:100%;
+        height:340px;
+    }
+
+    /* ======================
+    DASHBOARD CARDS
+    ====================== */
+
+    .dashboard-card{
+        background:#fff;
+        border-radius:24px;
+        padding:24px;
+        margin-top:30px;
+        box-shadow:0 4px 18px rgba(0,0,0,.08);
+    }
+
+    .section-title{
+        font-size:30px;
+        font-weight:600;
+        margin-bottom:20px;
+        color:#0f172a;
+    }
+
+    /* ======================
+    NOTIFICATIONS
+    ====================== */
+
+    .notification-item{
+        display:flex;
+        gap:14px;
+        padding:18px 0;
+        border-bottom:1px solid #e2e8f0;
+    }
+
+    .notif-dot{
+        width:12px;
+        height:12px;
+        border-radius:50%;
+        margin-top:6px;
+    }
+
+    .pending-dot{
+        background:#f59e0b;
+    }
+
+    .approved-dot{
+        background:#22c55e;
+    }
+
+    .completed-dot{
+        background:#3b82f6;
+    }
+
+    .notif-time{
+        color:#64748b;
+        font-size:13px;
+        margin-top:4px;
+    }
+
+    /* ======================
+    RECENT ITEMS
+    ====================== */
+
+    .recent-item{
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        border-radius:14px;
+        padding:18px;
+        margin-bottom:16px;
+        transition:.3s;
+    }
+
+    .recent-item:hover{
+        background:#f1f5f9;
+        transform:translateY(-2px);
+    }
+
+    .recent-item strong{
+        color:#0f172a;
+    }
+
+    .recent-item small{
+        color:#64748b;
+    }
+
+    /* ======================
+    MOBILE
+    ====================== */
+
+    @media(max-width:991px){
+
+        .chart-card{
+            height:400px;
+        }
+
+        .chart-container{
+            height:280px;
+        }
+
+    }
+</style>
+
+
+<h1 class="dashboard-title">
+    Welcome, {{ request.user.username }}
+</h1>
+
+<p style="color:#64748b;">
+    Fleet and Asset Management Overview
+</p>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Assets
+        </div>
+
+        <div class="stat-number blue">
+            {{ total_assets }}
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Pending Requests
+        </div>
+
+        <div class="stat-number yellow">
+            {{ pending_maintenance }}
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+        Active Vehicles
+         </div>
+
+         <div class="stat-number green">
+        {{ active_vehicles }}
+         </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Approved Requests
+        </div>
+
+        <div class="stat-number green">
+            {{ approved_requests }}
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+            <div class="stat-title">
+                Completed Requests
+            </div>
+
+            <div class="stat-number dark">
+                {{ completed_requests }}
+            </div>
+
+        </div>
+
+    <div class="stat-card">
+
+         <div class="stat-title">
+            Total Asset Value
+        </div>
+
+        <div style="
+            color:#9333ea;
+            font-size:28px;
+            font-weight:700;
+            ">
+            ₱{{ total_asset_value|intcomma }}
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- CHARTS SECTION -->
+
+<div class="row mt-4 g-4">
+
+    <div class="col-lg-6 col-md-12">
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+                Asset Status
+            </div>
+
+            <div class="chart-container">
+                <canvas id="assetChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+                Maintenance Requests
+            </div>
+
+            <div class="chart-container">
+                <canvas id="maintenanceChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+   
+
+
+
+<div class="dashboard-card">
+
+    <h3 class="section-title">
+
+        Recent Notifications
+
+    </h3>
+
+    {% for notification in recent_notifications %}
+
+    <div class="notification-item">
+
+        {% if notification.status == 'PENDING' %}
+
+        <div class="notif-dot pending-dot"></div>
+
+        {% elif notification.status == 'APPROVED' %}
+
+        <div class="notif-dot approved-dot"></div>
+
+        {% else %}
+
+        <div class="notif-dot completed-dot"></div>
+
+        {% endif %}
+
+        <div>
+
+            <strong>
+
+                {{ notification.requested_by }}
+
+            </strong>
+
+            submitted maintenance request for
+
+            <strong>
+
+                {{ notification.asset.name }}
+
+            </strong>
+
+            <div class="notif-time">
+
+                {{ notification.created_at|date:"M d, Y h:i A" }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+
+        <div class="dashboard-card">
+
+            <h4 class="section-title">
+                Recent Assets
+            </h4>
+
+            {% for asset in recent_assets %}
+
+<div class="recent-item">
+
+    <strong>
+        {{ asset.name }}
+    </strong>
+
+    <br>
+
+    <small>
+        Added on {{ asset.created_at|date:"M d, Y h:i A" }}
+    </small>
+
+</div>
+
+{% empty %}
+
+<p>No recent assets.</p>
+
+{% endfor %}
+
+
+
+            
+
+        </div>
+
+    </div>
+
+
+<div class="col-md-6">
+
+    <div class="dashboard-card">
+
+        <h4 class="section-title">
+            Recent Maintenance Requests
+        </h4>
+
+        {% for request in recent_requests %}
+
+        <div class="recent-item">
+
+            <strong>
+                {{ request.asset.name }}
+            </strong>
+
+            <br>
+
+            {{ request.issue_description }}
+
+            <br>
+
+            <small>
+                {{ request.status }}
+                •
+                {{ request.created_at|date:"M d, Y h:i A" }}
+            </small>
+
+        </div>
+
+        {% empty %}
+
+        <p>No recent requests.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+    
+    <strong>
+        {{ request.asset.name }}
+    </strong>
+
+    <p>
+        {{ request.issue_description }}
+    </p>
+
+    <small>
+        {{ request.status }}
+    </small>
+
+</div>
+
+
+
+         
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const assetCtx =
+        document.getElementById('assetChart');
+
+        new Chart(assetCtx, {
+
+            type:'pie',
+
+            data:{
+
+                labels:[
+                    'Active',
+                    'Maintenance',
+                    'Inactive'
+                ],
+
+                datasets:[{
+
+                    data:[
+
+                        {{ active_count }},
+                        {{ maintenance_count }},
+                        {{ inactive_count }}
+
+                    ],
+
+                    backgroundColor:[
+
+                        '#22c55e',
+                        '#f59e0b',
+                        '#ef4444'
+
+                    ],
+
+                    borderColor:'#ffffff',
+
+                    borderWidth:3
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+                maintainAspectRatio:false,
+
+                animation:{
+                    duration:2000
+                },
+
+            plugins:{
+
+                    legend:{
+
+                        display:true,
+
+                        position:'top',
+
+                        labels:{
+
+                            color:'#111827',
+
+                            font:{
+                                size:14,
+                                weight:'bold'
+                            }
+                        }
+                    }
+                }
+            }
+
+        });
+
+
+
+        const maintenanceCtx =
+        document.getElementById('maintenanceChart');
+
+        new Chart(maintenanceCtx, {
+
+            type:'bar',
+
+            data:{
+
+                labels:[
+                    'Pending',
+                    'Approved',
+                    'Completed',
+                    'Rejected'
+                ],
+
+                datasets:[{
+
+                    label:'Requests',
+
+                    data:[
+
+                        {{ pending_maintenance }},
+                        {{ approved_requests }},
+                        {{ completed_requests }},
+                        {{ rejected_requests }}
+
+                    ],
+
+                    backgroundColor:[
+
+                        '#f59e0b',
+                        '#22c55e',
+                        '#3b82f6',
+                        '#ef4444'
+
+                    ],
+
+                    borderRadius:12
+
+                }]
+
+            },
+
+                options:{
+
+                 responsive:true,
+                 maintainAspectRatio:false,
+
+                 animation:{
+                  duration:2000
+                },
+
+                plugins:{
+
+                    legend:{
+
+                        labels:{
+
+                            color:'#111827',
+
+                            font:{
+                                size:14,
+                                weight:'bold'
+                            }
+                        }
+                    }
+                },
+
+                scales:{
+
+                    x:{
+
+                        ticks:{
+                            color:'#111827'
+                        }
+                    },
+
+                    y:{
+
+                        beginAtZero:true,
+
+                        ticks:{
+                            color:'#111827'
+                        }
+                    }
+                }
+            }
+
+        });
+
+    </script>
+
+{% endblock %}

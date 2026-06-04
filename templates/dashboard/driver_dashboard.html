@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+    .dashboard-title{
+        font-size:42px;
+        font-weight:700;
+        margin-bottom:30px;
+    }
+
+    .stats-grid{
+        display:grid;
+        grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+        gap:20px;
+    }
+
+    .stat-card{
+        background:white;
+        border-radius:18px;
+        padding:28px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .stat-title{
+        color:#6b7280;
+        font-size:18px;
+        margin-bottom:15px;
+    }
+
+    .stat-value{
+        font-size:52px;
+        font-weight:700;
+    }
+
+    .blue{
+        color:#2563eb;
+    }
+
+    .orange{
+        color:#d97706;
+    }
+
+    .green{
+        color:#059669;
+    }
+
+</style>
+
+<h1 class="dashboard-title">
+    Driver Dashboard
+</h1>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            My Requests
+        </div>
+
+        <div class="stat-value blue">
+            {{ my_requests }}
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Pending Requests
+        </div>
+
+        <div class="stat-value orange">
+            {{ pending_requests }}
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Completed Requests
+        </div>
+
+        <div class="stat-value green">
+            {{ completed_requests }}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
