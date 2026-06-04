@@ -34,10 +34,12 @@ if not SECRET_KEY:
 
 _allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
-if not ALLOWED_HOSTS:
+
+if DEBUG and not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-    if not DEBUG:
-        ALLOWED_HOSTS.append('*')
+
+if 'evsu-fleet-tracker.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('evsu-fleet-tracker.onrender.com')
 
 
 # Application definition
