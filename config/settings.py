@@ -13,6 +13,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY') or os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
     if DEBUG:
         SECRET_KEY = 'django-insecure-f@)6j9)3h#kie-zhvbqefg=6(u0*3ivl00uxvbn-&mouoi$0=b'
     else:
-        raise ImproperlyConfigured('SECRET_KEY environment variable is required in production.')
+        SECRET_KEY = get_random_secret_key()
 
 _allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
