@@ -41,6 +41,11 @@ if not ALLOWED_HOSTS:
 if not DEBUG and 'evsu-fleet-tracker.onrender.com' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('evsu-fleet-tracker.onrender.com')
 
+# Ensure local hosts are always allowed for local development and health checks
+for _host in ('127.0.0.1', 'localhost'):
+    if _host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_host)
+
 
 # Application definition
 
