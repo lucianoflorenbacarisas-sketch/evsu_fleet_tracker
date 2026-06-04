@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,16 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-f@)6j9)3h#kie-zhvbqefg=6(u0*3ivl00uxvbn-&mouoi$0=b')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-f@)6j9)3h#kie-zhvbqefg=6(u0*3ivl00uxvbn-&mouoi$0=b'
+    else:
+        raise ImproperlyConfigured('SECRET_KEY environment variable is required in production.')
 
-_allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
-if _allowed_hosts_env:
-    ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
-else:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'evsu-fleet-tracker.onrender.com']
+_allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    if not DEBUG:
+        ALLOWED_HOSTS.append('*')
 
 
 # Application definition
