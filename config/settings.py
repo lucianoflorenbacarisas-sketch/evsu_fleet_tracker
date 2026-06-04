@@ -33,24 +33,16 @@ if not SECRET_KEY:
     else:
         SECRET_KEY = get_random_secret_key()
 
-_allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(',') if host.strip()]
-if not ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1'] if DEBUG else ['evsu-fleet-tracker.onrender.com']
+# ALLOWED_HOSTS
 
-if not DEBUG and 'evsu-fleet-tracker.onrender.com' not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('evsu-fleet-tracker.onrender.com')
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "evsu-fleet-tracker.onrender.com,localhost,127.0.0.1"
+).split(",")
 
-# Ensure local hosts are always allowed for local development and health checks
-for _host in ('127.0.0.1', 'localhost'):
-    if _host not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append(_host)
-
-if not DEBUG and not SECRET_KEY:
-    raise ImproperlyConfigured(
-        'The SECRET_KEY environment variable must be set when DEBUG=False.'
-    )
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://evsu-fleet-tracker.onrender.com",
+]
 
 # Application definition
 
