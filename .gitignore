@@ -46,7 +46,6 @@ db.sqlite3
 
 # Logs
 *.log
-logs/
 
 # Media files (optional - comment out if you want to track these)
 media/
