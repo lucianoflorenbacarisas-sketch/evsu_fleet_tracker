@@ -46,6 +46,11 @@ for _host in ('127.0.0.1', 'localhost'):
     if _host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_host)
 
+if not DEBUG and not SECRET_KEY:
+    raise ImproperlyConfigured(
+        'The SECRET_KEY environment variable must be set when DEBUG=False.'
+    )
+
 
 # Application definition
 
@@ -63,6 +68,7 @@ INSTALLED_APPS = [
     'api',
     'dashboard',
     'security',
+    'logs',
 ]
 
 MIDDLEWARE = [
@@ -214,6 +220,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
