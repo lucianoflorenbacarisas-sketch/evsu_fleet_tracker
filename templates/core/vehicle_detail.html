@@ -9,7 +9,7 @@
             <h1><i class="fas fa-car"></i> {{ vehicle.registration_number }}</h1>
             <small class="text-muted">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</small>
         </div>
-        {% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+        {% if user.role == 'ADMIN' or user.role == 'FLEET_MANAGER' %}
             <div>
                 <a href="{% url 'core:vehicle_update' vehicle.id %}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit

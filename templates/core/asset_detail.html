@@ -44,7 +44,7 @@
     </div>
 </div>
 
-{% if user.role in ['ADMIN', 'FLEET_MANAGER'] %}
+{% if user.role == 'ADMIN' or user.role == 'FLEET_MANAGER' %}
     <div class="mb-4">
         <a href="{% url 'core:asset_update' asset.id %}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit Asset</a>
         {% if user.role == 'ADMIN' %}
